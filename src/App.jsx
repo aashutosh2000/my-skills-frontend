@@ -16,9 +16,12 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // 1. डेटाबेस से डेटा लाना (GET)
+  // 1. डेटाबेस से डेटा लाना (GET) - अब टोकन के साथ
   const fetchSkills = () => {
-    axios.get(`${API_BASE_URL}/api/skills`)
+    const savedToken = localStorage.getItem('userToken');
+    axios.get(`${API_BASE_URL}/api/skills`, {
+      headers: { Authorization: `Bearer ${savedToken}` }
+    })
       .then(res => setSkills(res.data))
       .catch(err => console.error("डेटा लाने में एरर:", err));
   };
@@ -63,28 +66,38 @@ function App() {
     setSkills([]);
   };
 
-  // 4. नई स्किल जोड़ना (POST)
+  // 4. नई स्किल जोड़ना (POST) - अब टोकन के साथ
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!skillName) { alert("कृपया स्किल का नाम लिखें!"); return; }
     const newSkill = { name: skillName, status: skillStatus };
-    axios.post(`${API_BASE_URL}/api/skills`, newSkill)
+    const savedToken = localStorage.getItem('userToken');
+    
+    axios.post(`${API_BASE_URL}/api/skills`, newSkill, {
+      headers: { Authorization: `Bearer ${savedToken}` }
+    })
       .then(() => { setSkillName(''); fetchSkills(); })
       .catch(err => console.error(err));
   };
 
-  // 5. स्टेटस बदलना (PUT)
+  // 5. स्टेटस बदलना (PUT) - अब टोकन के साथ
   const handleUpdateStatus = (id, currentStatus) => {
     const nextStatus = currentStatus === 'Learning' ? 'Mastered' : 'Learning';
-    axios.put(`${API_BASE_URL}/api/skills/${id}`, { status: nextStatus })
+    const savedToken = localStorage.getItem('userToken');
+    axios.put(`${API_BASE_URL}/api/skills/${id}`, { status: nextStatus }, {
+      headers: { Authorization: `Bearer ${savedToken}` }
+    })
       .then(() => fetchSkills())
       .catch(err => console.error(err));
   };
 
-  // 6. डिलीट करना (DELETE)
+  // 6. डिलीट करना (DELETE) - अब टोकन के साथ
   const handleDelete = (id) => {
     if (window.confirm("क्या आप वाकई इसे डिलीट करना चाहते हैं?")) {
-      axios.delete(`${API_BASE_URL}/api/skills/${id}`)
+      const savedToken = localStorage.getItem('userToken');
+      axios.delete(`${API_BASE_URL}/api/skills/${id}`, {
+        headers: { Authorization: `Bearer ${savedToken}` }
+      })
         .then(() => fetchSkills())
         .catch(err => console.error(err));
     }
