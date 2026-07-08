@@ -1,0 +1,199 @@
+/* पूरे पेज का बैकग्राउंड और फॉन्ट */
+body {
+  margin: 0;
+  background-color: #f8fafc;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #334155;
+}
+
+/* मुख्य कंटेनर */
+.app-container {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* मेन हेडिंग का नया सुधरा हुआ स्टाइल */
+.main-title {
+  color: #10b981;
+  font-size: 1.8rem; /* 👈 साइज़ को 2.5 से घटाकर 1.8 कर दिया ताकि यह एकदम परफेक्ट दिखे */
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 12px; /* 👈 थोड़ा स्पेस नीचे बढ़ा दिया ताकि ओवरलैप न हो */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* हेडिंग और रॉकेट के बीच सही दूरी के लिए */
+}
+
+/* फॉर्म का बॉक्स */
+.form-box {
+  background: #f1f5f9;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 30px 0;
+  border: 1px solid #e2e8f0;
+}
+
+.form-box h3 {
+  margin-top: 0;
+  color: #475569;
+  margin-bottom: 15px;
+}
+
+/* इनपुट बॉक्स और ड्रॉपडाउन */
+.input-field {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 220px;
+  margin-right: 10px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input-field:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* बटन स्टाइल्स */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-submit {
+  background-color: #10b981;
+  color: white;
+}
+
+.btn-submit:hover {
+  background-color: #059669;
+}
+
+.btn-mastered {
+  background-color: #f59e0b;
+  color: white;
+  margin-right: 8px;
+}
+
+.btn-mastered:hover {
+  background-color: #d97706;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+/* स्किल्स की लिस्ट */
+.skills-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.skill-item {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.skill-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* स्टेटस बैज (Badge) */
+.badge {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.badge-learning {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.badge-mastered {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+/* लॉगिन और साइनअप बॉक्स का स्टाइल */
+.auth-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.auth-input {
+  width: 100px;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.auth-input:focus {
+  border-color: #10b981;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.auth-btn:hover {
+  background-color: #059669;
+}
+
+.toggle-text {
+  margin-top: 20px;
+  color: #64748b;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.toggle-text span {
+  color: #10b981;
+  font-weight: 600;
+}
