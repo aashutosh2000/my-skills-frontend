@@ -197,3 +197,41 @@ body {
   color: #10b981;
   font-weight: 600;
 }
+
+/* 📱 मोबाइल स्क्रीन के लिए विशेष सुधार */
+@media (max-width: 600px) {
+  .form-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .input-field {
+    width: 100% !important;
+    box-sizing: border-box;
+    background-color: #ffffff !important; /* डार्क बैकग्राउंड ठीक करने के लिए */
+    color: #000000 !important;
+  }
+
+  select.input-field {
+    width: 100% !important;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .skill-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .skill-item div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+}
