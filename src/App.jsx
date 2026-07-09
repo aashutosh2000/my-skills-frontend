@@ -9,6 +9,8 @@ function App() {
   const [skills, setSkills] = useState([]);
   const [skillName, setSkillName] = useState('');
   const [skillStatus, setSkillStatus] = useState('Learning');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All'); // 'All', 'Learning', 'Upcoming', 'Mastered'
 
   // लॉगिन और साइनअप के लिए स्टेट्स
   const [token, setToken] = useState(localStorage.getItem('userToken') || '');
@@ -97,7 +99,7 @@ function App() {
       })
       .catch(err => {
         console.error(err);
-        alert("इमेज अपलोड करने में कुछ गड़बड़ हुई!");
+        alert("इमेज अपलोड करने में कुछ गड़बड़ हुई!");
       })
       .finally(() => setUploading(false));
   };
@@ -139,6 +141,13 @@ function App() {
     }
   };
 
+  // 🔍 स्किल्स को सर्च और फ़िल्टर करने का असली लॉजिक (इसे यहाँ बाहर होना चाहिए ताकि पूरे कॉम्पोनेंट को मिले)
+  const filteredSkills = skills.filter(skill => {
+    const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === 'All' || skill.status === filterStatus;
+    return matchesSearch && matchesFilter;
+  });   
+
   // 🔒 अगर यूजर लॉगिन नहीं है, तो उसे सिर्फ लॉगिन/साइनअप स्क्रीन दिखाएं
   if (!token) {
     return (
@@ -174,11 +183,10 @@ function App() {
   }
 
   // ✅ लॉगिन होने के बाद असली स्किल्स डैशबोर्ड दिखेगा
-  // ✅ लॉगिन होने के बाद असली स्किल्स डैशबोर्ड दिखेगा
   return (
     <div className="app-container">
       
-      {/* 📸 प्रोफाइल फोटो अपलोड और डिस्प्ले सेक्शन (अब यह सबसे ऊपर रहेगा) */}
+      {/* 📸 प्रोफाइल फोटो अपलोड और डिस्प्ले सेक्शन */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
         <div style={{ width: '70px', height: '70px', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #10b981' }}>
           {profileImage ? (
@@ -223,13 +231,48 @@ function App() {
         <button type="submit" className="btn btn-submit">भेजें</button>
       </form>
 
-      {/* Skills List */}
+      {/* 🔍 सर्च और फ़िल्टर बार सेक्शन */}
+      <div style={{ marginBottom: '20px', background: '#f1f5f9', padding: '15px', borderRadius: '12px' }}>
+        <input 
+          type="text" 
+          placeholder="🔍 अपनी स्किल सर्च करें..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input-field"
+          style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
+        />
+        
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '5px' }}>
+          {['All', 'Learning', 'Upcoming', 'Mastered'].map(status => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status)}
+              type="button"
+              style={{
+                padding: '6px 12px',
+                borderRadius: '20px',
+                border: 'none',
+                fontSize: '13px',
+                cursor: 'pointer',
+                fontWeight: '500',
+                backgroundColor: filterStatus === status ? '#10b981' : '#e2e8f0',
+                color: filterStatus === status ? 'white' : '#475569',
+                transition: 'all 0.2s'
+              }}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Skills List (यहाँ अब filteredSkills का उपयोग होगा) */}
       <div>
-        {skills.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#94a3b8' }}>डेटाबेस खाली है या लोड हो रहा है...</p>
+        {filteredSkills.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#94a3b8' }}>कोई स्किल नहीं मिली या डेटाबेस खाली है...</p>
         ) : (
           <ul className="skills-list">
-            {skills.map(skill => (
+            {filteredSkills.map(skill => (
               <li key={skill._id} className="skill-item">
                 <div>
                   <span style={{ fontSize: '18px', fontWeight: '600', marginRight: '10px' }}>{skill.name}</span>
