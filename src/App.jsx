@@ -153,6 +153,11 @@ function App() {
     const matchesFilter = filterStatus === 'All' || skill.status === filterStatus;
     return matchesSearch && matchesFilter;
   });   
+  // 📊 स्किल्स का लाइव काउंट निकालने का लॉजिक
+  const totalSkills = skills.length;
+  const masteredCount = skills.filter(s => s.status === 'Mastered').length;
+  const learningCount = skills.filter(s => s.status === 'Learning').length;
+  const upcomingCount = skills.filter(s => s.status === 'Upcoming').length;
 
   // 🔒 अगर यूजर लॉगिन नहीं है, तो उसे सिर्फ लॉगिन/साइनअप स्क्रीन दिखाएं
   if (!token) {
@@ -218,6 +223,26 @@ function App() {
       </div>
       
       <p style={{ color: '#64748b', marginBottom: '20px' }}>यह आपका पूरी तरह से सुरक्षित (Authenticated) मर्न डैशबोर्ड है:</p>
+      
+      {/* 📊 लाइव स्टेटिस्टिक्स कार्ड्स */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '10px', marginBottom: '25px' }}>
+        <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '10px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+          <span style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{totalSkills}</span>
+          <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#64748b', fontWeight: '500' }}>Total Skills</p>
+        </div>
+        <div style={{ background: '#ecfdf5', padding: '12px', borderRadius: '10px', textAlign: 'center', border: '1px solid #a7f3d0' }}>
+          <span style={{ fontSize: '18px', fontWeight: '700', color: '#047857' }}>{masteredCount}</span>
+          <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#065f46', fontWeight: '500' }}>Mastered 🏆</p>
+        </div>
+        <div style={{ background: '#eff6ff', padding: '12px', borderRadius: '10px', textAlign: 'center', border: '1px solid #bfdbfe' }}>
+          <span style={{ fontSize: '18px', fontWeight: '700', color: '#1d4ed8' }}>{learningCount}</span>
+          <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#1e40af', fontWeight: '500' }}>Learning ⚡</p>
+        </div>
+        <div style={{ background: '#fffbeb', padding: '12px', borderRadius: '10px', textAlign: 'center', border: '1px solid #fde68a' }}>
+          <span style={{ fontSize: '18px', fontWeight: '700', color: '#b45309' }}>{upcomingCount}</span>
+          <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#92400e', fontWeight: '500' }}>Upcoming ⏳</p>
+        </div>
+      </div>
 
       {/* Form Section */}
       <form onSubmit={handleSubmit} className="form-box">
