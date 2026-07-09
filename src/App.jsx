@@ -16,6 +16,9 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [profileImage, setProfileImage] = useState(localStorage.getItem('userProfileImage') || '');
+  const [uploading, setUploading] = useState(false);
+
   // 1. डेटाबेस से डेटा लाना (GET) - अब टोकन के साथ
   const fetchSkills = () => {
     const savedToken = localStorage.getItem('userToken');
@@ -50,6 +53,8 @@ function App() {
         } else {
           localStorage.setItem('userToken', res.data.token); // ब्राउज़र में चाबी सेव करें
           setToken(res.data.token);
+          localStorage.setItem('userProfileImage', res.data.profileImage || '');
+          setProfileImage(res.data.profileImage || '');
         }
         setEmail('');
         setPassword('');
@@ -64,6 +69,37 @@ function App() {
     localStorage.removeItem('userToken');
     setToken('');
     setSkills([]);
+    localStorage.removeItem('userProfileImage');
+    setProfileImage('');
+  };
+
+  // 📸 इमेज अपलोड करने का फंक्शन (API Call)
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    setUploading(true);
+    const savedToken = localStorage.getItem('userToken');
+
+    axios.post(`${API_BASE_URL}/api/user/upload-profile`, formData, {
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${savedToken}` 
+      }
+    })
+      .then(res => {
+        alert(res.data.message);
+        setProfileImage(res.data.profileImage);
+        localStorage.setItem('userProfileImage', res.data.profileImage);
+      })
+      .catch(err => {
+        console.error(err);
+        alert("इमेज अपलोड करने में कुछ गड़बड़ हुई!");
+      })
+      .finally(() => setUploading(false));
   };
 
   // 4. नई स्किल जोड़ना (POST) - अब टोकन के साथ
@@ -138,22 +174,43 @@ function App() {
   }
 
   // ✅ लॉगिन होने के बाद असली स्किल्स डैशबोर्ड दिखेगा
+  // ✅ लॉगिन होने के बाद असली स्किल्स डैशबोर्ड दिखेगा
   return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 className="main-title" style={{ fontSize: '1.6rem' }}>नमस्ते आशुतोष! मेरी स्किल्स 🚀</h1>
+      
+      {/* 📸 प्रोफाइल फोटो अपलोड और डिस्प्ले सेक्शन (अब यह सबसे ऊपर रहेगा) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
+        <div style={{ width: '70px', height: '70px', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #10b981' }}>
+          {profileImage ? (
+            <img src={profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <span style={{ fontSize: '30px' }}>👤</span>
+          )}
+        </div>
+        <div>
+          <label style={{ background: '#10b981', color: 'white', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', cursor: 'pointer', fontWeight: '500' }}>
+            {uploading ? 'अपलोड हो रहा है...' : '📸 फोटो बदलें'}
+            <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} disabled={uploading} />
+          </label>
+        </div>
+      </div>
+
+      {/* 👑 हेडर सेक्शन जिसमें टाइटल और लॉगआउट बटन है */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+        <h1 className="main-title" style={{ fontSize: '1.6rem', margin: 0 }}>नमस्ते आशुतोष! मेरी स्किल्स 🚀</h1>
         <button onClick={handleLogout} className="btn btn-delete" style={{ padding: '6px 12px', fontSize: '14px' }}>
           Logout 🚪
         </button>
       </div>
-      <p style={{ color: '#64748b' }}>यह आपका पूरी तरह से सुरक्षित (Authenticated) मर्न डैशबोर्ड है:</p>
+      
+      <p style={{ color: '#64748b', marginBottom: '20px' }}>यह आपका पूरी तरह से सुरक्षित (Authenticated) मर्न डैशबोर्ड है:</p>
 
       {/* Form Section */}
       <form onSubmit={handleSubmit} className="form-box">
         <h3>➕ नई स्किल जोड़ें</h3>
         <input 
           type="text" 
-          placeholder="स्किल का नाम" 
+          placeholder="स्किल का name" 
           value={skillName}
           onChange={(e) => setSkillName(e.target.value)}
           className="input-field"
