@@ -9,6 +9,7 @@ function App() {
   const [skills, setSkills] = useState([]);
   const [skillName, setSkillName] = useState('');
   const [skillStatus, setSkillStatus] = useState('Learning');
+  const [skillCategory, setSkillCategory] = useState('Frontend'); // 'Frontend', 'Backend', 'Database'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All'); // 'All', 'Learning', 'Upcoming', 'Mastered'
 
@@ -104,17 +105,22 @@ function App() {
       .finally(() => setUploading(false));
   };
 
-  // 4. नई स्किल जोड़ना (POST) - अब टोकन के साथ
+  // 4. नई स्किल जोड़ना (POST) - अब कैटेगरी के साथ
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!skillName) { alert("कृपया स्किल का नाम लिखें!"); return; }
-    const newSkill = { name: skillName, status: skillStatus };
+    
+    // यहाँ हमने category को भी ऑब्जेक्ट में जोड़ दिया है
+    const newSkill = { name: skillName, status: skillStatus, category: skillCategory };
     const savedToken = localStorage.getItem('userToken');
     
     axios.post(`${API_BASE_URL}/api/skills`, newSkill, {
       headers: { Authorization: `Bearer ${savedToken}` }
     })
-      .then(() => { setSkillName(''); fetchSkills(); })
+      .then(() => { 
+        setSkillName(''); 
+        fetchSkills(); 
+      })
       .catch(err => console.error(err));
   };
 
@@ -228,6 +234,12 @@ function App() {
           <option value="Upcoming">Upcoming</option>
           <option value="Mastered">Mastered</option>
         </select>
+        {/* कैटेगरी चुनने का ड्रॉपडाउन */}
+        <select value={skillCategory} onChange={(e) => setSkillCategory(e.target.value)} className="input-field" style={{ width: '130px' }}>
+          <option value="Frontend">Frontend 💻</option>
+          <option value="Backend">Backend ⚙️</option>
+          <option value="Database">Database 🗄️</option>
+        </select>
         <button type="submit" className="btn btn-submit">भेजें</button>
       </form>
 
@@ -277,6 +289,7 @@ function App() {
                 <div>
                   <span style={{ fontSize: '18px', fontWeight: '600', marginRight: '10px' }}>{skill.name}</span>
                   <span className={`badge ${skill.status === 'Mastered' ? 'badge-mastered' : 'badge-learning'}`}>{skill.status}</span>
+                  <span style={{ fontSize: '12px', background: '#e2e8f0', color: '#475569', padding: '3px 8px', borderRadius: '4px', marginLeft: '5px', fontWeight: '500' }}>{skill.category || 'Frontend'}</span>
                 </div>
                 <div>
                   <button onClick={() => handleUpdateStatus(skill._id, skill.status)} className="btn btn-mastered" style={{ padding: '6px 12px', fontSize: '14px' }}>
