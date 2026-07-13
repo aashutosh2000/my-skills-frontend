@@ -1,16 +1,27 @@
-# React + Vite
+# 💻 MERN Stack Skills Dashboard (Front-End)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+यह मेरे लाइव पोर्टफोलियो का एडमिन डैशबोर्ड है, जिसे मैंने React.js और Axios का उपयोग करके बनाया है। इसके जरिए मैं अपने लाइव पोर्टफोलियो की स्किल्स को रियल-टाइम में मैनेज (CRUD) कर सकता हूँ।
 
-Currently, two official plugins are available:
+## 🔗 Live Links
+- **Live Dashboard:** https://my-skills-frontend.vercel.app/
+- **Live Portfolio Website:** https://aashutosh2000.github.io/Portfolio-project/
+- **Back-End Repository:** https://my-skills-api-p955.onrender.com/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 मुख्य फीचर्स (Key Features)
+- **🔒 Secure Authentication:** JWT टोकन-बेस्ड लॉगिन और साइनअप सिस्टम।
+- **📝 Full CRUD Operations:** नई स्किल्स जोड़ना, डिलीट करना और इन-लाइन एडिट (Update) करने की पूरी सुविधा।
+- **🔍 Real-Time Search & Filter:** स्किल्स को नाम से सर्च करने और स्टेटस (All, Learning, Upcoming, Mastered) के आधार पर फ़िल्टर करने का एडवांस सिस्टम।
+- **📊 Live Statistics Cards:** कुल स्किल्स, मास्टर की गई स्किल्स और अभी सीखी जा रही स्किल्स का लाइव काउंट ऑटोमैटिक अपडेट होता है।
+- **📸 Profile Image Upload:** Cloudinary API के जरिए सुरक्षित प्रोफाइल फोटो अपलोड और डिस्प्ले मैनेजमेंट।
 
-## React Compiler
+## 🛠️ टेक स्टैक (Tech Stack)
+- **Framework:** React.js (Vite)
+- **HTTP Client:** Axios (API Requests के लिए)
+- **Styling:** Custom CSS3 (Fully Responsive)
+- **State Management:** React Hooks (`useState`, `useEffect`)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📦 लोकल मशीन पर कैसे चलाएं (Installation)
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+1. रिपोजिटरी को क्लोन करें:
+   ```bash
+   git clone [https://github.com/aashutosh2000/my-skills-frontend.git](https://github.com/aashutosh2000/my-skills-frontend.git)
