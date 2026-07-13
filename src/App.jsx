@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
-// 🌐 आपकी रेंडर वाली लाइव बैकएंड लिंक यहाँ सेट कर दी है
+// 🌐 आपकी रेंडर वाली लाइव बैकएंड लिंक
 const API_BASE_URL = 'https://my-skills-api-p955.onrender.com';
 
 function App() {
@@ -13,6 +13,12 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All'); // 'All', 'Learning', 'Upcoming', 'Mastered'
 
+  // 📝 एडिट फीचर के लिए आवश्यक स्टेट्स
+  const [editingSkillId, setEditingSkillId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editStatus, setEditStatus] = useState('Learning');
+  const [editCategory, setEditCategory] = useState('Frontend');
+
   // लॉगिन और साइनअप के लिए स्टेट्स
   const [token, setToken] = useState(localStorage.getItem('userToken') || '');
   const [isSignup, setIsSignup] = useState(false);
@@ -22,7 +28,7 @@ function App() {
   const [profileImage, setProfileImage] = useState(localStorage.getItem('userProfileImage') || '');
   const [uploading, setUploading] = useState(false);
 
-  // 1. डेटाबेस से डेटा लाना (GET) - अब टोकन के साथ
+  // 1. डेटाबेस से डेटा लाना (GET)
   const fetchSkills = () => {
     const savedToken = localStorage.getItem('userToken');
     axios.get(`${API_BASE_URL}/api/skills`, {
@@ -52,9 +58,9 @@ function App() {
       .then(res => {
         if (isSignup) {
           alert(res.data.message);
-          setIsSignup(false); // साइनअप के बाद लॉगिन स्क्रीन पर भेजें
+          setIsSignup(false);
         } else {
-          localStorage.setItem('userToken', res.data.token); // ब्राउज़र में चाबी सेव करें
+          localStorage.setItem('userToken', res.data.token);
           setToken(res.data.token);
           localStorage.setItem('userProfileImage', res.data.profileImage || '');
           setProfileImage(res.data.profileImage || '');
@@ -76,7 +82,7 @@ function App() {
     setProfileImage('');
   };
 
-  // 📸 इमेज अपलोड करने का फंक्शन (API Call)
+  // 📸 इमेज अपलोड करने का फंक्शन
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -105,12 +111,11 @@ function App() {
       .finally(() => setUploading(false));
   };
 
-  // 4. नई स्किल जोड़ना (POST) - अब कैटेगरी के साथ
+  // 4. नई स्किल जोड़ना (POST)
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!skillName) { alert("कृपया स्किल का नाम लिखें!"); return; }
     
-    // यहाँ हमने category को भी ऑब्जेक्ट में जोड़ दिया है
     const newSkill = { name: skillName, status: skillStatus, category: skillCategory };
     const savedToken = localStorage.getItem('userToken');
     
@@ -124,7 +129,7 @@ function App() {
       .catch(err => console.error(err));
   };
 
-  // 5. स्टेटस बदलना (PUT) - अब टोकन के साथ
+  // 5. स्टेटस त्वरित बदलना (Mark Mastered / Learn Again)
   const handleUpdateStatus = (id, currentStatus) => {
     const nextStatus = currentStatus === 'Learning' ? 'Mastered' : 'Learning';
     const savedToken = localStorage.getItem('userToken');
@@ -135,7 +140,32 @@ function App() {
       .catch(err => console.error(err));
   };
 
-  // 6. डिलीट करना (DELETE) - अब टोकन के साथ
+  // ✏️ 6. स्किल को एडिट मोड में डालना (फ्रंटएंड पर वैल्यू सेट करना)
+  const startEdit = (skill) => {
+    setEditingSkillId(skill._id);
+    setEditName(skill.name);
+    setEditStatus(skill.status || 'Learning');
+    setEditCategory(skill.category || 'Frontend');
+  };
+
+  // 🔄 7. पूरी तरह एडिटेड स्किल को बैकएंड API पर सेव करना (PUT Call)
+  const handleSaveEdit = (id) => {
+    if (!editName) { alert("स्किल का नाम खाली नहीं हो सकता!"); return; }
+
+    const updatedSkillData = { name: editName, status: editStatus, category: editCategory };
+    const savedToken = localStorage.getItem('userToken');
+
+    axios.put(`${API_BASE_URL}/api/skills/${id}`, updatedSkillData, {
+      headers: { Authorization: `Bearer ${savedToken}` }
+    })
+      .then(() => {
+        setEditingSkillId(null); // एडिट मोड बंद करें
+        fetchSkills(); // लिस्ट रिफ्रेश करें
+      })
+      .catch(err => console.error("अपडेट करने में एरर आया:", err));
+  };
+
+  // 8. डिलीट करना (DELETE)
   const handleDelete = (id) => {
     if (window.confirm("क्या आप वाकई इसे डिलीट करना चाहते हैं?")) {
       const savedToken = localStorage.getItem('userToken');
@@ -147,19 +177,19 @@ function App() {
     }
   };
 
-  // 🔍 स्किल्स को सर्च और फ़िल्टर करने का असली लॉजिक (इसे यहाँ बाहर होना चाहिए ताकि पूरे कॉम्पोनेंट को मिले)
+  // 🔍 सर्च और फ़िल्टर लॉजिक
   const filteredSkills = skills.filter(skill => {
     const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'All' || skill.status === filterStatus;
     return matchesSearch && matchesFilter;
   });   
-  // 📊 स्किल्स का लाइव काउंट निकालने का लॉजिक
+
+  // 📊 लाइव स्टेटिस्टिक्स
   const totalSkills = skills.length;
   const masteredCount = skills.filter(s => s.status === 'Mastered').length;
   const learningCount = skills.filter(s => s.status === 'Learning').length;
   const upcomingCount = skills.filter(s => s.status === 'Upcoming').length;
 
-  // 🔒 अगर यूजर लॉगिन नहीं है, तो उसे सिर्फ लॉगिन/साइनअप स्क्रीन दिखाएं
   if (!token) {
     return (
       <div className="auth-container">
@@ -193,11 +223,10 @@ function App() {
     );
   }
 
-  // ✅ लॉगिन होने के बाद असली स्किल्स डैशबोर्ड दिखेगा
   return (
     <div className="app-container">
       
-      {/* 📸 प्रोफाइल फोटो अपलोड और डिस्प्ले सेक्शन */}
+      {/* 📸 प्रोफाइल फोटो सेक्शन */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
         <div style={{ width: '70px', height: '70px', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #10b981' }}>
           {profileImage ? (
@@ -214,8 +243,8 @@ function App() {
         </div>
       </div>
 
-      {/* 👑 हेडर सेक्शन जिसमें टाइटल और लॉगआउट बटन है */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+      {/* 👑 हेडर सेक्शन */}
+      <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         <h1 className="main-title" style={{ fontSize: '1.6rem', margin: 0 }}>नमस्ते आशुतोष! मेरी स्किल्स 🚀</h1>
         <button onClick={handleLogout} className="btn btn-delete" style={{ padding: '6px 12px', fontSize: '14px' }}>
           Logout 🚪
@@ -224,7 +253,7 @@ function App() {
       
       <p style={{ color: '#64748b', marginBottom: '20px' }}>यह आपका पूरी तरह से सुरक्षित (Authenticated) मर्न डैशबोर्ड है:</p>
       
-      {/* 📊 लाइव स्टेटिस्टिक्स कार्ड्स */}
+      {/* 📊 लाइव स्टेटिस्टिक्स */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '10px', marginBottom: '25px' }}>
         <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '10px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
           <span style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{totalSkills}</span>
@@ -259,7 +288,6 @@ function App() {
           <option value="Upcoming">Upcoming</option>
           <option value="Mastered">Mastered</option>
         </select>
-        {/* कैटेगरी चुनने का ड्रॉपडाउन */}
         <select value={skillCategory} onChange={(e) => setSkillCategory(e.target.value)} className="input-field" style={{ width: '130px' }}>
           <option value="Frontend">Frontend 💻</option>
           <option value="Backend">Backend ⚙️</option>
@@ -268,7 +296,7 @@ function App() {
         <button type="submit" className="btn btn-submit">भेजें</button>
       </form>
 
-      {/* 🔍 सर्च और फ़िल्टर बार सेक्शन */}
+      {/* 🔍 सर्च और फ़िल्टर बार */}
       <div style={{ marginBottom: '20px', background: '#f1f5f9', padding: '15px', borderRadius: '12px' }}>
         <input 
           type="text" 
@@ -303,25 +331,62 @@ function App() {
         </div>
       </div>
 
-      {/* Skills List (यहाँ अब filteredSkills का उपयोग होगा) */}
+      {/* Skills List */}
       <div>
         {filteredSkills.length === 0 ? (
           <p style={{ textAlign: 'center', color: '#94a3b8' }}>कोई स्किल नहीं मिली या डेटाबेस खाली है...</p>
         ) : (
           <ul className="skills-list">
             {filteredSkills.map(skill => (
-              <li key={skill._id} className="skill-item">
-                <div>
-                  <span style={{ fontSize: '18px', fontWeight: '600', marginRight: '10px' }}>{skill.name}</span>
-                  <span className={`badge ${skill.status === 'Mastered' ? 'badge-mastered' : 'badge-learning'}`}>{skill.status}</span>
-                  <span style={{ fontSize: '12px', background: '#e2e8f0', color: '#475569', padding: '3px 8px', borderRadius: '4px', marginLeft: '5px', fontWeight: '500' }}>{skill.category || 'Frontend'}</span>
-                </div>
-                <div>
-                  <button onClick={() => handleUpdateStatus(skill._id, skill.status)} className="btn btn-mastered" style={{ padding: '6px 12px', fontSize: '14px' }}>
-                    {skill.status === 'Learning' ? '⚡ Mark Mastered' : '🔄 Learn Again'}
-                  </button>
-                  <button onClick={() => handleDelete(skill._id)} className="btn btn-delete" style={{ padding: '6px 12px', fontSize: '14px' }}>Delete</button>
-                </div>
+              <li key={skill._id} className="skill-item" style={{ background: editingSkillId === skill._id ? '#f1f5f9' : '' }}>
+                
+                {/* 📝 अगर यह स्किल एडिट मोड में है तो इनपुट फॉर्म दिखाएं */}
+                {editingSkillId === skill._id ? (
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', padding: '5px' }}>
+                    <input 
+                      type="text" 
+                      value={editName} 
+                      onChange={(e) => setEditName(e.target.value)} 
+                      className="input-field"
+                      style={{ width: '100%' }}
+                    />
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)} className="input-field">
+                        <option value="Frontend">Frontend</option>
+                        <option value="Backend">Backend</option>
+                        <option value="Database">Database</option>
+                      </select>
+                      <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)} className="input-field">
+                        <option value="Learning">Learning</option>
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Mastered">Mastered</option>
+                      </select>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                      <button onClick={() => handleSaveEdit(skill._id)} className="btn btn-submit" style={{ padding: '5px 15px', fontSize: '13px' }}>Save ✅</button>
+                      <button onClick={() => setEditingSkillId(null)} className="btn btn-delete" style={{ padding: '5px 15px', fontSize: '13px', backgroundColor: '#64748b' }}>Cancel ❌</button>
+                    </div>
+                  </div>
+                ) : (
+                  // ✅ सामान्य रूप से दिखने वाली स्किल आइटम
+                  <>
+                    <div>
+                      <span style={{ fontSize: '18px', fontWeight: '600', marginRight: '10px' }}>{skill.name}</span>
+                      <span className={`badge ${skill.status === 'Mastered' ? 'badge-mastered' : 'badge-learning'}`}>{skill.status}</span>
+                      <span style={{ fontSize: '12px', background: '#e2e8f0', color: '#475569', padding: '3px 8px', borderRadius: '4px', marginLeft: '5px', fontWeight: '500' }}>{skill.category || 'Frontend'}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <button onClick={() => startEdit(skill)} className="btn" style={{ padding: '6px 12px', fontSize: '14px', backgroundColor: '#eab308', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+                        ✏️ Edit
+                      </button>
+                      <button onClick={() => handleUpdateStatus(skill._id, skill.status)} className="btn btn-mastered" style={{ padding: '6px 12px', fontSize: '14px' }}>
+                        {skill.status === 'Learning' ? '⚡ Mark Mastered' : '🔄 Learn Again'}
+                      </button>
+                      <button onClick={() => handleDelete(skill._id)} className="btn btn-delete" style={{ padding: '6px 12px', fontSize: '14px' }}>Delete</button>
+                    </div>
+                  </>
+                )}
+
               </li>
             ))}
           </ul>
