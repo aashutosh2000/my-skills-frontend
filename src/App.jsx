@@ -12,6 +12,8 @@ function App() {
   const [skillCategory, setSkillCategory] = useState('Frontend'); // 'Frontend', 'Backend', 'Database'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All'); // 'All', 'Learning', 'Upcoming', 'Mastered'
+  const [aiSuggestion, setAiSuggestion] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
 
   // 📝 एडिट फीचर के लिए आवश्यक स्टेट्स
   const [editingSkillId, setEditingSkillId] = useState(null);
@@ -184,6 +186,23 @@ function App() {
     return matchesSearch && matchesFilter;
   });   
 
+  const fetchAiSuggestions = async () => {
+    setAiLoading(true);
+    setAiSuggestion('');
+    try {
+        const token = localStorage.getItem('userToken'); // यहाँ 'userToken' कर दिया है
+        const response = await axios.post('https://my-skills-api-p955.onrender.com/api/ai-suggestions', {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        setAiSuggestion(response.data.suggestion);
+    } catch (error) {
+        console.error("AI Error:", error);
+        setAiSuggestion("एआई सुझाव लोड करने में विफल। कृपया बाद में प्रयास करें।");
+    } finally {
+        setAiLoading(false);
+    }
+};
+
   // 📊 लाइव स्टेटिस्टिक्स
   const totalSkills = skills.length;
   const masteredCount = skills.filter(s => s.status === 'Mastered').length;
@@ -331,6 +350,24 @@ function App() {
         </div>
       </div>
 
+          <div className="ai-container" style={{ margin: '20px 0', padding: '20px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #ff0055' }}>
+    <h3 style={{ color: '#fff', marginBottom: '10px' }}>🤖 AI Career Coach (Gemini 2.5)</h3>
+    <button 
+        onClick={fetchAiSuggestions} 
+        disabled={aiLoading}
+        style={{ padding: '10px 20px', background: '#ff0055', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+    >
+        {aiLoading ? '🔄 Analyzing Skills...' : '✨ Ask AI for Next Skills'}
+    </button>
+    
+    {aiSuggestion && (
+        <div style={{ marginTop: '15px', color: '#ccc', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+            {aiSuggestion}
+        </div>
+    )}
+</div>
+
+          
       {/* Skills List */}
       <div>
         {filteredSkills.length === 0 ? (
