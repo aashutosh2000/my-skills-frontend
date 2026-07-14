@@ -351,7 +351,7 @@ function App() {
       </div>
 
           <div className="ai-container" style={{ margin: '20px 0', padding: '20px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #ff0055' }}>
-    <h3 style={{ color: '#fff', marginBottom: '10px' }}>🤖 AI Career Coach (Gemini 2.5)</h3>
+    <h3 style={{ color: '#fff', marginBottom: '10px' }}>🤖 AI Career Coach (Gemini 3.5)</h3>
     <button 
         onClick={fetchAiSuggestions} 
         disabled={aiLoading}
