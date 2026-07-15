@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
+import ReactMarkdown from 'react-markdown';
 
 // 🌐 आपकी रेंडर वाली लाइव बैकएंड लिंक
 const API_BASE_URL = 'https://my-skills-api-p955.onrender.com';
@@ -187,84 +188,41 @@ function App() {
   });   
 
   const fetchAiSuggestions = async () => {
-
     setAiLoading(true);
     setAiSuggestion("");
 
     try {
-
         const token = localStorage.getItem("userToken");
-
         const response = await axios.post(
-
             `${API_BASE_URL}/api/ai-suggestions`,
-
             {},
-
             {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
-
                 timeout: 60000      // 60 Seconds
             }
-
         );
 
         console.log(response.data);
-
         setAiSuggestion(response.data.suggestion);
-
     }
-
     catch (error) {
-
         console.log(error);
-
         if (error.code === "ECONNABORTED") {
-
             setAiSuggestion("⏰ AI Response Timeout. Render ya Gemini bahut slow hai.");
-
         }
-
         else if (error.response) {
-
             setAiSuggestion(error.response.data.error);
-
         }
-
         else {
-
             setAiSuggestion("❌ Server Error");
-
         }
-
     }
-
     finally {
-
         setAiLoading(false);
-
     }
-
-};
-
-//   const fetchAiSuggestions = async () => {
-//     setAiLoading(true);
-//     setAiSuggestion('');
-//     try {
-//         const token = localStorage.getItem('userToken'); // यहाँ 'userToken' कर दिया है
-//         const response = await axios.post('https://my-skills-api-p955.onrender.com/api/ai-suggestions', {}, {
-//             headers: { Authorization: `Bearer ${token}` }
-//         });
-//         setAiSuggestion(response.data.suggestion);
-//     } catch (error) {
-//         console.error("AI Error:", error);
-//         setAiSuggestion("एआई सुझाव लोड करने में विफल। कृपया बाद में प्रयास करें।");
-//     } finally {
-//         setAiLoading(false);
-//     }
-// };
+  };
 
   // 📊 लाइव स्टेटिस्टिक्स
   const totalSkills = skills.length;
@@ -326,7 +284,7 @@ function App() {
       </div>
 
       {/* 👑 हेडर सेक्शन */}
-      <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         <h1 className="main-title" style={{ fontSize: '1.6rem', margin: 0 }}>नमस्ते आशुतोष! मेरी स्किल्स 🚀</h1>
         <button onClick={handleLogout} className="btn btn-delete" style={{ padding: '6px 12px', fontSize: '14px' }}>
           Logout 🚪
@@ -413,61 +371,51 @@ function App() {
         </div>
       </div>
 
-          <div className="ai-container" style={{ margin: '20px 0', padding: '20px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #ff0055' }}>
-    <h3 style={{ color: '#fff', marginBottom: '10px' }}>🤖 AI Career Coach (Gemini 3.5)</h3>
-    
-    <button
-    onClick={fetchAiSuggestions}
-    disabled={aiLoading}
-    style={{
-        padding: "12px 20px",
-        background: aiLoading ? "#555" : "#ff0055",
-        color: "white",
-        border: "none",
-        borderRadius: "8px",
-        cursor: aiLoading ? "not-allowed" : "pointer",
-        fontSize: "16px",
-        fontWeight: "bold"
-    }}
->
-    {aiLoading
-        ? "🔄 Analyzing Skills..."
-        : "✨ Ask AI for Next Skills"}
-</button>
-    
-    { 
-    aiLoading &&
+      {/* 🤖 एआई कंटेनर */}
+      <div className="ai-container" style={{ margin: '20px 0', padding: '20px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #ff0055' }}>
+        <h3 style={{ color: '#fff', marginBottom: '10px' }}>🤖 AI Career Coach (Gemini 3.5)</h3>
+        
+        <button
+          onClick={fetchAiSuggestions}
+          disabled={aiLoading}
+          style={{
+            padding: "12px 20px",
+            background: aiLoading ? "#555" : "#ff0055",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: aiLoading ? "not-allowed" : "pointer",
+            fontSize: "16px",
+            fontWeight: "bold"
+          }}
+        >
+          {aiLoading ? "🔄 Analyzing Skills..." : "✨ Ask AI for Next Skills"}
+        </button>
+        
+        {aiLoading && (
+          <p style={{ color: "#00ff99", marginTop: "20px", fontWeight: "bold" }}>
+            🤖 Gemini is analyzing your skills...
+          </p>
+        )}
 
-    <p
-    style={{
-        color:"#00ff99",
-        marginTop:"20px",
-        fontWeight:"bold"
-    }}>
-        🤖 Gemini is analyzing your skills...
-    </p>
-}
-{
-    aiSuggestion &&
+        {/* 🌟 यहाँ बदलाव किया है: साधारण टेक्स्ट की जगह Markdown रेंडरर का यूज़ किया है */}
+        {aiSuggestion && (
+          <div
+            style={{
+              marginTop: "20px",
+              padding: "15px",
+              background: "#2d2d2d",
+              borderRadius: "8px",
+              color: "white",
+              lineHeight: "1.8",
+              textAlign: "left"
+            }}
+          >
+            <ReactMarkdown>{aiSuggestion}</ReactMarkdown>
+          </div>
+        )}
+      </div>
 
-    <div
-    style={{
-        marginTop:"20px",
-        padding:"15px",
-        background:"#2d2d2d",
-        borderRadius:"8px",
-        color:"white",
-        whiteSpace:"pre-wrap",
-        lineHeight:"1.8"
-    }}>
-
-        {aiSuggestion}
-
-    </div>
-}
-</div>
-
-          
       {/* Skills List */}
       <div>
         {filteredSkills.length === 0 ? (
@@ -505,7 +453,6 @@ function App() {
                     </div>
                   </div>
                 ) : (
-                  // ✅ सामान्य रूप से दिखने वाली स्किल आइटम
                   <>
                     <div>
                       <span style={{ fontSize: '18px', fontWeight: '600', marginRight: '10px' }}>{skill.name}</span>
@@ -523,7 +470,6 @@ function App() {
                     </div>
                   </>
                 )}
-
               </li>
             ))}
           </ul>
